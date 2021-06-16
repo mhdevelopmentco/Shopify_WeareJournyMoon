@@ -1,0 +1,192 @@
+<div class="about-banner" style="margin-top:-30px;">
+  <img src="{{ 'about-banner.jpg' | asset_url }}">
+</div>
+<div class="row single-column">
+  <div class="columns">
+    <h1 class="abouttitle">Our Story</h1>
+    <div class="page-content">
+      <div class="rte-content colored-links">
+        {{ page.content }}
+      </div>
+    </div>
+
+  </div>
+</div>
+ {% if settings.middle_img %}
+<div class="about-banner">
+  <img src="{{ 'about-middle-area.png' | asset_url }}">
+</div>
+{% endif %}
+<div id="team_grid">
+  <h2 class="teamtitle">{{ settings.about-member-heading }}</h2>
+  <div class="row">
+    {% for i in (1..20) %}
+    {% capture member_enabled %}show_member_{{ i }}{% endcapture %}
+    {% capture member_img %}member_{{ i }}.jpg{% endcapture %}
+    {% capture member_hover_img %}member_hover_{{ i }}.jpg{% endcapture %}
+    {% capture member_title %}member_title_{{ i }}{% endcapture %}
+    {% capture member_subtitle %}member_subtitle_{{ i }}{% endcapture %}
+    {% capture member_content %}member_content_{{ i }}{% endcapture %}
+    
+    {% if settings[member_enabled] %}
+    <div class="team-grid-item">
+      <div class="team-member-wrapper">
+        <div style="background-image: url({{ member_img | asset_url }});" class="team-member"></div>
+      </div>
+      <div class="team-member-grown  ">
+        <div class="team-member-wrapper">
+          <div class="team-member-bump">
+            <div style="background-image: url({{ member_hover_img | asset_url }});" class="team-member">
+              <div class="team-member-info">
+                <h3>{{ settings[member_title] }}</h3>
+                <h4>{{ settings[member_subtitle] }}</h4>
+                <p>{{ settings[member_content] }}</p>
+              </div>
+            </div>
+            <div class="overlay"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .about-banner img{width:100%;}
+  .abouttitle {
+    margin-top: 30px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight:normal;
+  }
+  .rte-content h5 {
+    color: #000;
+    font-size: 12px;
+    font-weight: bold !important;
+    margin: 0 0 14px;
+}
+  .team-grid-item {
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .team-member-wrapper {
+    padding-bottom:107.955%;
+    position: relative;
+    width: 100%;
+  }
+  .team-member {
+    background-position: center center;
+    background-size: cover;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .team-member-grown {
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+  .team-member-bump {
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .team-member-grown .team-member {
+    display: none;
+  }
+  .team-member-info {
+    background: rgba(255, 255, 255, 0.9) none repeat scroll 0 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    padding: 24px 16px;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .overlay {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .team-member-wrapper .overlay {
+    border: 4px solid #e0e0e0;
+    transition: border 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0s;
+  }
+  .team-member-wrapper:hover .overlay {
+    border-color:#000;
+  }
+
+  .team-grid-item:hover .team-member-grown .team-member{display:block; opacity:1;}
+  #team_grid {
+    min-height: 600px;
+  }
+
+  #team_grid .row {
+    margin: 0 auto;
+  }
+  .teamtitle {
+    margin-bottom: 20px;
+    margin-top: 30px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .team-grid-item {
+    float: left;
+    margin: 0.7%;
+    width: 18.6%;
+  }
+  .team-grid-item.grow {
+    z-index: 1;
+  }
+  .team-grid-item.grow .team-member-grown {
+    width: 208%;
+  }
+  .team-grid-item.grow .team-member-grown .team-member {
+    display: block;
+  }
+  .team-grid-item.grow .team-member-info {
+    opacity: 1;
+  }
+  .team-member-grown.mod-3 {
+    left: auto;
+    right: 0;
+  }
+  .team-member-info {
+    padding: 76px 40px;
+  }
+  @media screen and (max-width: 639px){
+    .team-grid-item.grow .team-member-grown {
+      width: 203%;
+    }
+    .team-grid-item {
+      width: 48%;
+    }
+    .team-grid-item.grow:nth-child(2n) .team-member-grown {
+      left: auto;
+      right: 0;
+    }
+  }
+</style>
+
+<script>
+  $('div.team-grid-item').click(function() {
+    if($('div.team-grid-item').hasClass('grow')) {       
+      $(this).removeClass('grow')
+    }
+    else{
+      $(this).addClass('grow');
+    }
+  });
+</script>

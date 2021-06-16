@@ -1,0 +1,101 @@
+{% if settings.newsletter_popup %}   
+<div id="newsletter-popup" class="zoom-anim-dialog mfp-hide">
+  {% if settings.newsletter_popup_form %}  
+  <div class="newsletter-popup-content">
+    <div class="popup-header">
+      <h2>WE ARE JOURNEYMEN.</h2>
+      <h4>STAY FRESH WITH EXCLUSIVE OFFERS <br>AND THE LATEST NEWS.</h4>
+    </div>
+    {% include 'newsletter' %}
+  </div>
+  {% endif %}
+</div>    
+
+<script type="text/javascript">
+  $(document).mouseleave(function () {
+    function openNewsletterPopup() {
+      setTimeout( function() {
+        $.magnificPopup.open({
+          items: {
+            src: '#newsletter-popup'
+          },
+          type: 'inline',
+          fixedContentPos: true,
+          fixedBgPos: true,
+          overflowY: 'hidden',
+          closeBtnInside: true,
+          preloader: false,
+          midClick: true,
+          removalDelay: 300,
+          mainClass: 'my-mfp-slide-bottom',
+          callbacks: {
+            open: function() {
+              $.magnificPopup.instance.close = function () {
+                var expires_popup = {{ settings.newsletter_popup_days }};
+                jQuery.cookie('popup', 'open', { expires: expires_popup, path: '/' });
+                $.magnificPopup.proto.close.call(this);
+              };
+            }
+          }
+        });
+      }, 
+                 {% if settings.newsletter_popup_seconds != blank %}{{ settings.newsletter_popup_seconds }}{% else %}2{% endif %}*1000);
+    }
+
+    $(function() {
+      var popup = $.cookie('popup');
+      var cookie_enabled = {% if settings.newsletter_popup_days != blank and settings.newsletter_popup_days != "0" %}true{% else %}false{% endif %};
+
+      if (cookie_enabled && popup == 'open') {
+        return false;
+      } else {
+        var url = "/cart.js";
+        $.getJSON(url, function (results) {
+         if(results.items.length == 0){
+          openNewsletterPopup();
+         }
+         else{
+          
+         }
+        });
+
+        
+      }
+    });
+  });
+
+  $('#newsletter-popup .action_button').click(function(){
+    var $form = $('#newsletter-popup form');
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: $form.serialize(),
+      cache       : false,
+      dataType    : 'json',
+      contentType: "application/json; charset=utf-8",
+      error       : function(err) { alert("Could not connect to the registration server. Please try again later."); },
+      success     : function(data) {
+        if (data.result != "success") {
+          $("#newsletter-popup .message").html(data.msg);             
+        } 
+        else 
+        {
+          var expires_popup = {{ settings.newsletter_popup_days }};
+          $.cookie('popup', 'open', { expires: expires_popup, path: '/' });
+          $("#newsletter-popup .message").html("Please check your email and confirm your subscription.");
+          setTimeout(function(){ $('#newsletter-popup .mfp-close').trigger('click');}, 1000);
+        }
+      }
+    });
+  });
+
+  $( "#newsletter-popup form" ).keypress(function(e) {
+    if(e.which == 13) {
+      $( "#newsletter-popup .action_button" ).trigger( "click" );
+      return false;
+    }    
+  }); 
+
+</script>
+{% endif %}
+

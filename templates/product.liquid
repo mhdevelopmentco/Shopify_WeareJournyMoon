@@ -1,0 +1,72 @@
+<header>
+  <div class="row show-for-medium-up">
+    <div class="columns">
+      {% if settings.product-breadcrumbs-show %}
+        {% include 'snippet-breadcrumbs' %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="previous-next row">
+    {% if collection %}
+      {% if collection.previous_product or collection.next_product %}
+        <div class="previous columns large-3 small-6"> 
+          {% if collection.previous_product %}
+            <a class="left" title="Previous Product" href="{{ collection.previous_product}}"><span aria-hidden="true" class="glyph arrow-left"></span> {{ 'products.previous_item' | t }}</a>
+          {% endif %}
+          <div class="border-decoration show-for-large-up"></div>
+        </div>
+
+        <div class="next columns large-3 large-offset-6 small-6">
+          {% if collection.next_product %}
+            <a class="right" title="Next Product" href="{{ collection.next_product}}">{{ 'products.next_item' | t }} <span aria-hidden="true" class="glyph arrow-right"></span></a>
+          {% endif %}
+          <div class="border-decoration show-for-large-up"></div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</header>
+
+
+  {% include "product-form" %}
+  
+
+
+{% if settings.product-share-this-show %}
+  <section class="row social-share">
+    <div class="columns">
+      {% include 'snippet-product-share' with 'product-template' %}
+    </div>
+  </section>
+{% endif %}
+
+{{ pages.product-extension-test-1.content }}
+
+{% if settings.product-similar-products-show %}
+  {% include 'snippet-related-products' %}
+{% endif %}
+
+{% if settings.product-modal-enabled %}
+  <div class="modal">
+    <div class="loading"></div>
+    <a aria-hidden="true" class="prev glyph slider-left"></a>
+    <a aria-hidden="true" class="close glyph cross"></a>
+    <a aria-hidden="true" class="next glyph slider-right"></a>
+    <div class="slides"></div>
+  </div>
+  <div class="modal-mask"></div>
+{% endif %}
+
+<script>
+  // variables to pass to shop.js
+  var selectCallback = '';
+  var product_title = '{{ product.title | escape }}';
+  var product_variant_size = {{ product.variants.size }};
+  var product_options_size = {{ product.options.size }};
+  var product_options_first = '{{ product.options.first  }}';
+  var product_json = {{ product | json }};
+  var product_language_was = '{{ 'products.was' | t | escape }}';
+
+  // Looking for the selectCallback function?
+  // You can find it at the bottom of the theme.liquid file
+</script>

@@ -1,0 +1,117 @@
+{% paginate blog.articles by settings.blog-articles-per-page %}
+<div id="featured-post">
+  {% for article in blog.articles %}
+  {% if article.tags contains "featured" %}
+
+  {% assign my_image_url=article.content | escape %}
+  {% if my_image_url contains '&lt;img' %}
+  {% assign my_image_url = my_image_url | split: 'src=&quot;' %}
+  {% assign my_image_url = my_image_url[1] | split: '&quot;' %}
+  {% assign my_image_url = my_image_url[0] | remove: '//cdn' %}
+  {% assign my_image_url = my_image_url | remove: 'http:' %}
+  {% assign my_image_url = my_image_url | remove: 'https:' %}
+  {% endif %}
+
+  <div class="featured-hero" style="background-image: url({% if article.image %}{{ article | img_url: 'original' }}{% else %}{{ my_image_url | prepend: 'http://cdn' }}{% endif %});">	
+    <a href="{{article.url}}">
+      <div class="middle-content">
+        {% for tag in article.tags %}
+        {% if tag contains "featured-" %}
+        {% assign location =  tag | remove:'featured-' | upcase %}
+        <h3>{{ location }}</h3>
+        {% endif %}
+        {% endfor %}
+
+        {% for tag in article.tags %}
+        {% if tag contains "featured2-" %}
+        {% assign featured2 =  tag | remove:'featured2-' | upcase %}
+        <h4>{{ featured2 }}</h4>
+        {% endif %}
+        {% endfor %}
+        
+        <h4>Read the full article</h4>    
+
+      </div>
+    </a>
+    
+    {% comment %}
+    <button class="jump-btn"><i class="fa fa-caret-down" aria-hidden="true"></i></button>
+    <script>
+      $(document).ready(function(){
+        $('.jump-btn').click(function(){
+          var blogContent = $('#blog-posts').offset().top;
+
+          $('html, body').animate({
+            scrollTop: blogContent
+          });
+        });
+      });
+    </script>
+    {% endcomment %}
+
+  </div>
+
+  {% endif %}
+  {% endfor %}
+</div>
+
+<div class="row blog-title">
+  <div class="columns large-12">
+    <h1>{{ blog.title }}</h1>
+  </div> 
+</div>
+
+<div id="blog-posts" class="left-two-columns-wrapper row"> 
+  <!-- Begin content -->
+  <div class="articles columns">
+    {% if blog.articles.size <= 0 %}
+    <h2>{{ 'blog.article.no_articles' | t }}</h2>
+    {% endif %}
+
+    {% for article in blog.articles %}
+
+    {% assign article_image_url=article.content | escape %}
+    {% if article_image_url contains '&lt;img' %}
+    {% assign article_image_url = article_image_url | split: 'src=&quot;' %}
+    {% assign article_image_url = article_image_url[1] | split: '&quot;' %}
+    {% assign article_image_url = article_image_url[0] | remove: '//cdn' %}
+    {% assign article_image_url = article_image_url | remove: 'http:' %}
+    {% assign article_image_url = article_image_url | remove: 'https:' %}
+    {% endif %}
+
+    <div class="article columns large-4 clearfix">
+      <a href="{{ article.url }}" title="{{ article.title }}">
+        <div class="featured-image">
+
+          {% if article.image %}{{ article | img_url: 'large' | img_tag }}{% else %}{{ article_image_url | prepend: 'http://cdn' | img_tag }}{% endif %}
+
+          <div class="middle-content">
+            <h3 class="date">{{ article.published_at | date: "%-d.%m.%y" }}</h3>
+
+            {% for tag in article.tags %}
+            {% if tag contains "location-" %}
+            {% assign location =  tag | remove:'location-' | upcase %}
+            <h3 class="location">{{ location }}</h3>
+            {% endif %}
+            {% endfor %}
+
+          </div>
+        </div>
+      </a>
+
+      <a href="{{ article.url }}" title="{{ blog.title }}"><h3 class="article-title">{{ article.title }}</h3></a>
+
+      <div class="content rte-content colored-links">
+        {{ article.excerpt_or_content | strip_html }}
+
+        {% if article.excerpt != blank %}
+        <p class="read-more"><a href="{{ article.url }}">{{ 'blog.article.read_more' | t }} <span aria-hidden="true" class="glyph arrow-right"></span></a></p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+{% endpaginate %}

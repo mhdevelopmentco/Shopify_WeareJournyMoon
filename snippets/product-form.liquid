@@ -1,0 +1,146 @@
+<article class="row" itemscope itemtype="http://schema.org/Product">
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
+  <meta itemprop="image" content="{{ product.featured_image.src | product_img_url: 'grande' }}" />
+
+
+  <div class="product-container">
+    <div class="columns large-7 small-12">
+      <div class="photos" >
+        <div class="container clearfix">
+
+          {% for image in product.images %}
+          <a class="photo" href="{{ image.src | product_img_url: '1024x1024' }}" data-zoom="{{ image.src | product_img_url: '1024x1024' }}" rel="gallery" data-image-id="{{ image.id }}">
+            <img src="{{ image.src | product_img_url: 'grande' }}" alt="{{ image.alt | escape }}" />
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="thumbs">
+        {% if product.images.size > 1 %}
+        <ul class="clearfix row">
+          {% for image in product.images %}
+          <li class="thumb">
+            <img src="{{ image.src | product_img_url: 'compact' }}" alt="{{ image.alt | escape }}" />
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="columns large-3 small-12">
+      <div class="product-detail-header">
+        <h1 class="page-title" itemprop="name">{{ product.title }}</h1>
+        {% if settings.product-brand-show %}
+        {% assign product_vendor_handle = product.vendor | handle %}
+        {% if collections[product_vendor_handle].handle == product_vendor_handle %}
+        {% assign vendor_url = collections[product_vendor_handle].url %}
+        {% else %}
+        {% assign vendor_url = product.vendor | url_for_vendor %}
+        {% endif %}
+        <h2 class="vendor" itemprop="brand">{{ product.vendor | link_to: vendor_url }}</h2>
+        {% endif %}
+
+
+        <div class="prices">
+          <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
+
+            {% if product.available %}
+            <link itemprop="availability" href="http://schema.org/InStock" />
+            {% else %}
+            <link itemprop="availability" href="http://schema.org/OutOfStock" />
+            {% endif %}
+
+            <p>
+              {% assign variant = product.selected_or_first_available_variant %}
+              <span class="actual-price" itemprop="price">{{ variant.price | money }}</span>&nbsp;<span class="compare-price">{% if variant.price < variant.compare_at_price %}{{ 'products.was' | t }} {{ variant.compare_at_price | money }}{% endif %}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="product-detail-vendor"><h3>{{ product.vendor }}</h3></div>
+
+
+      <form class="cart-form custom" action="/cart/add" data-productid="{{product.id}}"  method="post" enctype="multipart/form-data"> 
+ {% if product.available %}{% include 'subscription-product' %}{% endif %}   
+
+        {% comment %}
+        <!-- Adding line items - https://docs.shopify.com/manual/configuration/store-customization/page-specific/product-page/get-customization-information-for-products -->
+        <div>
+          <label for="line-item-1">Line Item 1</label>
+          <input type="text" id="line-item-1" name="properties[line-item-1]">
+        </div>
+
+        <div>
+          <label for="line-item-2">Line Item 2</label>
+          <input type="text" id="line-item-2" name="properties[line-item-2]">
+        </div>
+        {% endcomment %}
+
+        <div class="variants {% unless product.variants.size > 1 %}hidden{% endunless %}">
+          <select id="variant-listbox" name="id" data-productid="{{product.id}}" class="medium">
+            {% for variant in product.variants %}
+            <option data-sku="{{ variant.sku }}" {% if variant.inventory_quantity <= 0 and variant.available == false %}DISABLED {% endif %}{% if variant == product.selected_or_first_available_variant %}selected="selected" {% endif %} value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="quanity-cart-row clearfix">
+          {% include 'snippet-quantity' %}
+
+          <div class="add-to-cart">
+            <input type="submit" name="add" id="add" value="{{ 'products.add_to_cart' | t }}" class="purchase button btn-submit">
+          </div>
+        </div>
+      </form>
+
+      <div id="accordion">
+        <h3>OVERVIEW :</h3>
+        <div>
+          <p>{{ product.description | split:'[OVERVIEW]' | last | split:'[/OVERVIEW]' | first }}</p>
+        </div>
+        <h3>FRAGRANCE :</h3>
+        <div>
+          <p>{{ product.description | split:'[FRAGRANCE]' | last | split:'[/FRAGRANCE]' | first }}</p>
+        </div>
+        <h3>INGREDIENT LIST :</h3>
+        <div>
+          <p>{{ product.description | split:'[INGREDIENT]' | last | split:'[/INGREDIENT]' | first }}</p>
+        </div>
+        <h3>USAGE DIRECTIONS :</h3>
+        <div>
+          <p>{{ product.description | split:'[USAGE]' | last | split:'[/USAGE]' | first }}</p>
+        </div>
+      </div>
+
+      {% include 'snippet-product-unavailable' %}
+
+
+      <div class="description" >
+
+      </div>
+    </div>
+
+
+  </div>
+
+</article>
+
+
+<script>
+  $(function() {
+    var icons = {
+      header: "accordion-icon accordion-down",
+      activeHeader: "accordion-icon accordion-up"
+    };
+
+    $( "#accordion" ).accordion({
+      collapsible: true,
+      heightStyle: "content",
+      icons: icons
+    });
+  });
+</script>

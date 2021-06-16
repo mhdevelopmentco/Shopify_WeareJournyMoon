@@ -1,0 +1,26 @@
+<div class="newsletter">
+  <p class="message"></p>
+  {% if settings.newsletter_form_action != ' ' %}
+  <form action="{{ settings.newsletter_form_action | replace:"/subscribe/post?u=","/subscribe/post-json?u="}}&c=?" method="post" name="mc-embedded-subscribe-form" class="contact-form" target="_blank">
+    <label for="email">Email address:</label>
+    <input type="email" value="" name="EMAIL" class="required email" placeholder="" />
+    <input type="button" value="Subscribe" name="subscribe" class="action_button sign_up" />
+  </form>
+  {% else %}    
+  {% form 'customer' %}
+  {% if form.posted_successfully? %}
+  <p><em>Thank you for joining our mailing list!</em></p>
+  {% elsif form.errors %}
+  {% for field in form.errors %}
+  <p><em>{{ field }} - {{ form.errors.messages[field] }}</em></p>
+  {% endfor %}
+  {% endif %}
+
+  <input type="hidden" name="contact[tags]" value="prospect,newsletter"/>
+  <input type="hidden" name="contact[first_name]" value="Newsletter" />
+  <input type="hidden" name="contact[last_name]" value="Subscriber" />
+  <input type="email" name="contact[email]" required pattern="[^ @]*@[^ @]*" placeholder="Enter your email address..." />
+  <input type='submit' class="action_button sign_up" value="Subscribe" />
+  {% endform %}
+  {% endif %}
+</div>
